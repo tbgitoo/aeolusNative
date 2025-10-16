@@ -1,0 +1,16 @@
+[submodule "src/main/cpp/SynthesizerBase"]
+	path = src/main/cpp/SynthesizerBase
+	url = https://github.com/tbgitoo/SynthesizerBase
+	update = rebase
+[submodule "src/main/cpp/aeolus"]
+	path = src/main/cpp/aeolus
+	url = https://github.com/tbgitoo/aeolus
+	update = rebase
+[submodule "src/main/cpp/clthreads"]
+	path = src/main/cpp/clthreads
+	url = https://github.com/tbgitoo/clthreads
+	update = rebase
+[submodule "src/main/cpp/oboe"]
+	path = src/main/cpp/oboe
+	url = https://github.com/google/oboe
+	update = rebase
