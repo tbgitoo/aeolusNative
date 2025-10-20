@@ -177,7 +177,7 @@ extern "C" {
  * @param   midiDeviceObj   (Java) MidiDevice object.
  * @param   portNumber      The index of the "output" port to open.
  */
-void Java_com_mathis_midiSynth_hardwareMidi_support_AppMidiManager_startReadingMidi(
+void Java_com_mathis_midiSynth_hardwareMidi_AppMidiManager_startReadingMidi(
         JNIEnv* env, jobject, jobject midiDeviceObj, jint portNumber) {
     AMidiDevice_fromJava(env, midiDeviceObj, &sNativeReceiveDevice);
     // int32_t deviceType = AMidiDevice_getType(sNativeReceiveDevice);
@@ -200,7 +200,7 @@ void Java_com_mathis_midiSynth_hardwareMidi_support_AppMidiManager_startReadingM
  * @param   (unnamed)   JNI Env pointer.
  * @param   (unnamed)   TBMidiManager (Java) object.
  */
-void Java_com_mathis_midiSynth_hardwareMidi_support_AppMidiManager_stopReadingMidi(JNIEnv*,
+void Java_com_mathis_midiSynth_hardwareMidi_AppMidiManager_stopReadingMidi(JNIEnv*,
                                                                 jobject) {
     // need some synchronization here
     sReading = false;
@@ -217,13 +217,13 @@ void Java_com_mathis_midiSynth_hardwareMidi_support_AppMidiManager_stopReadingMi
  * Initializes JNI interface stuff, specifically the info needed to call back
  * into the Java layer when MIDI data is received.
  */
-JNICALL void Java_com_mathis_midiSynth_hardwareMidi_support_AppMidiManager_initNative(
+JNICALL void Java_com_mathis_midiSynth_hardwareMidi_AppMidiManager_initNative(
         JNIEnv* env, jobject instance) {
     env->GetJavaVM(&theJvm);
 
     // Setup the receive data callback (into Java)
     jclass clsAppMidiManager =
-            env->FindClass("com/mathis/midiSynth/hardwareMidi/support/AppMidiManager");
+            env->FindClass("com/mathis/midiSynth/hardwareMidi/AppMidiManager");
     dataCallbackObj = env->NewGlobalRef(instance);
     midDataCallback =
             env->GetMethodID(clsAppMidiManager, "onNativeMessageReceive", "([B)V");
