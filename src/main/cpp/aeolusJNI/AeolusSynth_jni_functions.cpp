@@ -22,7 +22,7 @@ static bool self_test_running=false;
 
 
 extern "C" [[maybe_unused]] JNIEXPORT void JNICALL Java_com_mathis_aeolusnative_AeolusSynth_AeolussynthManager_initAeolussynth
-        (JNIEnv* env, jclass) {
+        ( JNIEnv* env, jclass) {
     initAeolusSynth();
     // Setup synthesizer
     //settings = new_JUCE_settings();
