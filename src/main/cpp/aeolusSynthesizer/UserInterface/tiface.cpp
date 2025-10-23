@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
 //
 //  Copyright (C) 2003-2013 Fons Adriaensen <fons@linuxaudio.org>
-//    
+//
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation; either version 3 of the License, or
@@ -17,41 +17,69 @@
 //
 // ----------------------------------------------------------------------------
 
+/**
+ * @file tiface.cpp
+ * @brief Implementation of the Tiface and Reader classes.
+ *
+ * This file contains the implementation of the Tiface and Reader classes, which
+ * together provide a text-based user interface for the Aeolus synthesizer.
+ * The Reader class is responsible for reading user input, while the Tiface
+ * class processes commands and manages the synthesizer's state.
+ *
+ * Note that this class is not used directly in the aeolus Android codebase,
+ * because there is actually no console for input-output available. Instead
+ * android_aeolus_user_interface extends this class to provide the necessary
+ * functionality for the Android environment.
+ */
 
 #include <cstdlib>
 #include <cstdio>
 #include <cctype>
 #include "tiface.h"
 
+/**
+ * @class Reader
+ * @brief A class for reading user input from the command line.
+ *
+ * The Reader class is a thread that reads user input from the command line
+ * and sends it to the Tiface class for processing.
+ */
 
-
-
-
-
-
-
+/**
+ * @brief Constructs a Reader object.
+ * @param edest A pointer to the destination for events.
+ * @param ipind The index of the input port.
+ */
 Reader::Reader (Edest *edest, int ipind) :
     H_thread (edest, ipind)
 {
 }
 
-
+/**
+ * @brief Destroys the Reader object.
+ */
 Reader::~Reader ()
 = default;
 
-
+/**
+ * @brief Puts an M_ifc_txtip event into the event queue.
+ */
 void Reader::read ()
 {
     put_event (0, new M_ifc_txtip);
 }
 
-
+/**
+ * @brief The main loop of the Reader thread.
+ *
+ * This function reads user input from the command line and sends it to the
+ * Tiface class for processing.
+ */
 void Reader::thr_main ()
 {
     M_ifc_txtip  *M;
 
-
-    while (1)
+    while (true)
     {
 	get_event (1);
 	M = (M_ifc_txtip *) get_message ();
@@ -72,9 +100,17 @@ void Reader::thr_main ()
     }
 }
 
+/**
+ * @class Tiface
+ * @brief A text-based user interface for the Aeolus synthesizer.
+ *
+ * The Tiface class is responsible for processing user commands, managing the
+ * synthesizer's state, and displaying information to the user.
+ */
 
-
-
+/**
+ * @brief Constructs a Tiface object.
+ */
 Tiface::Tiface () :
     _stop (false),
     _init (true),
@@ -86,16 +122,24 @@ Tiface::Tiface () :
     for (i = 0; i < NGROUP; i++) _ifelms [i] = 0;
 }
 
-
+/**
+ * @brief Destroys the Tiface object.
+ */
 Tiface::~Tiface ()
 = default;
 
-
+/**
+ * @brief Stops the Tiface thread.
+ */
 void Tiface::stop ()
 {
 }
 
-
+/**
+ * @brief The main loop of the Tiface thread.
+ *
+ * This function processes events and messages from the event queue.
+ */
 void Tiface::thr_main ()
 {
     set_time (nullptr);
@@ -107,7 +151,7 @@ void Tiface::thr_main ()
 	{
         case FM_MODEL:
         case FM_TXTIP:
-            handle_mesg (get_message ()); 
+            handle_mesg (get_message ());
 	    break;
 
         case EV_EXIT:
@@ -117,7 +161,10 @@ void Tiface::thr_main ()
     send_event (EV_EXIT, 1);
 }
 
-
+/**
+ * @brief Handles a message from the event queue.
+ * @param M A pointer to the message.
+ */
 void Tiface::handle_mesg (ITC_mesg *M)
 {
     if(M== nullptr)
@@ -183,7 +230,9 @@ void Tiface::handle_mesg (ITC_mesg *M)
     }
 }
 
-
+/**
+ * @brief Handles the MT_IFC_READY message.
+ */
 void Tiface::handle_ifc_ready ()
 {
         if (_init)
@@ -198,7 +247,10 @@ void Tiface::handle_ifc_ready ()
     _init = false;
 }
 
-
+/**
+ * @brief Handles the MT_IFC_INIT message.
+ * @param M A pointer to the M_ifc_init message.
+ */
 void Tiface::handle_ifc_init (M_ifc_init *M)
 {
     __android_log_print(android_LogPriority::ANDROID_LOG_INFO,
@@ -210,7 +262,10 @@ void Tiface::handle_ifc_init (M_ifc_init *M)
 
 }
 
-
+/**
+ * @brief Handles the MT_IFC_MCSET message.
+ * @param M A pointer to the M_ifc_chconf message.
+ */
 void Tiface::handle_ifc_mcset (M_ifc_chconf *M)
 {
     if (_mididata) _mididata ->recover ();
@@ -218,34 +273,49 @@ void Tiface::handle_ifc_mcset (M_ifc_chconf *M)
     if (!_init) print_midimap ();
 }
 
-
+/**
+ * @brief Handles the MT_IFC_RETUNE message.
+ * @param M A pointer to the M_ifc_retune message.
+ */
 void Tiface::handle_ifc_retune (M_ifc_retune *M)
 {
     printf ("Retuning Aeolus, A = %3.1lf Hz, %s (%s)\n",
-	    M->_freq,  
-	    _initdata->_temped [M->_temp]._label, 
-	    _initdata->_temped [M->_temp]._mnemo); 
+	    M->_freq,
+	    _initdata->_temped [M->_temp]._label,
+	    _initdata->_temped [M->_temp]._mnemo);
 }
 
-
+/**
+ * @brief Handles the MT_IFC_GRCLR message.
+ * @param M A pointer to the M_ifc_ifelm message.
+ */
 void Tiface::handle_ifc_grclr (M_ifc_ifelm *M)
 {
     _ifelms [M->_group] = 0;
 }
 
-
+/**
+ * @brief Handles the MT_IFC_ELCLR message.
+ * @param M A pointer to the M_ifc_ifelm message.
+ */
 void Tiface::handle_ifc_elclr (M_ifc_ifelm *M)
 {
     _ifelms [M->_group] &= ~(1 << M->_ifelm);
 }
 
-
+/**
+ * @brief Handles the MT_IFC_ELSET message.
+ * @param M A pointer to the M_ifc_ifelm message.
+ */
 void Tiface::handle_ifc_elset (M_ifc_ifelm *M)
 {
     _ifelms [M->_group] |= (1 << M->_ifelm);
 }
 
-
+/**
+ * @brief Handles the MT_IFC_ELATT message.
+ * @param M A pointer to the M_ifc_ifelm message.
+ */
 void Tiface::handle_ifc_elatt (M_ifc_ifelm *M)
 {
     __android_log_print(android_LogPriority::ANDROID_LOG_INFO,
@@ -260,7 +330,10 @@ void Tiface::handle_ifc_elatt (M_ifc_ifelm *M)
     tIO.handleOutputFromTI(message);
 }
 
-
+/**
+ * @brief Handles the MT_IFC_TXTIP message.
+ * @param M A pointer to the M_ifc_txtip message.
+ */
 void Tiface::handle_ifc_txtip (M_ifc_txtip *M)
 {
     /* This is the original implementation for a linux command line interpreter
@@ -276,7 +349,9 @@ void Tiface::handle_ifc_txtip (M_ifc_txtip *M)
     //_reader.read ();
 }
 
-
+/**
+ * @brief Prints information about the synthesizer.
+ */
 void Tiface::print_info ()
 {
     char* message;
@@ -298,7 +373,9 @@ void Tiface::print_info ()
     print_midimap ();
 }
 
-
+/**
+ * @brief Prints information about the keyboards.
+ */
 void Tiface::print_keybdd ()
 {
     int i, b, k, n;
@@ -333,14 +410,15 @@ void Tiface::print_keybdd ()
     }
 }
 
-
+/**
+ * @brief Prints information about the divisions.
+ */
 void Tiface::print_divisd ()
 {
     int i, b, k, n;
     tIO.handleOutputFromTI("Divisions:");
 
     char* message;
-
 
     for (k = 0; k < NDIVIS; k++)
     {
@@ -368,7 +446,9 @@ void Tiface::print_divisd ()
     }
 }
 
-
+/**
+ * @brief Prints the MIDI routing map.
+ */
 void Tiface::print_midimap ()
 {
     char* message;
@@ -388,7 +468,6 @@ void Tiface::print_midimap ()
         asprintf (&message," %2d  ", c + 1);
         tIO.handleOutputFromTI(message);
         delete message;
-
 
 	    if (f & 1) {
             asprintf (&message,"keybd %-7s", _initdata->_keybdd [k]._label);
@@ -410,7 +489,10 @@ void Tiface::print_midimap ()
     if (n == 0)  tIO.handleOutputFromTI(" No channels are assigned.");
 }
 
-
+/**
+ * @brief Prints a short list of stops in a group.
+ * @param group The group index.
+ */
 void Tiface::print_stops_short (int group)
 {
     int       i, n;
@@ -437,7 +519,10 @@ void Tiface::print_stops_short (int group)
     if (n % 5) tIO.handleOutputFromTI(" ");
 }
 
-
+/**
+ * @brief Prints a long list of stops in a group.
+ * @param group The group index.
+ */
 void Tiface::print_stops_long (int group)
 {
     int       i, n;
@@ -460,9 +545,12 @@ void Tiface::print_stops_long (int group)
 
 	m >>= 1;
     }
-}              
+}
 
-
+/**
+ * @brief Rewrites a label by removing the '$' character.
+ * @param p The label to rewrite.
+ */
 void Tiface::rewrite_label (const char *p)
 {
     char *t;
@@ -477,7 +565,10 @@ void Tiface::rewrite_label (const char *p)
     }
 }
 
-
+/**
+ * @brief Parses a command from the user.
+ * @param p The command to parse.
+ */
 void Tiface::parse_command (const char *p)
 {
     int c1, c2;
@@ -486,7 +577,7 @@ void Tiface::parse_command (const char *p)
     c1 = *p++;
     if (c1 == 0) return;
     c2 = *p++;
-    if (c2 && !isspace (c2)) 
+    if (c2 && !isspace (c2))
     {
         tIO.handleOutputFromTI("Bad command");
 	return;
@@ -516,7 +607,10 @@ void Tiface::parse_command (const char *p)
     }
 }
 
-
+/**
+ * @brief Executes the 's' command.
+ * @param p The arguments to the command.
+ */
 void Tiface::command_s (const char *p)
 {
     int  g, i, k, n;
@@ -545,7 +639,6 @@ void Tiface::command_s (const char *p)
 	|| ((k = comm1 (s)) < 0))
     {
         tIO.handleOutputFromTI("Expected one of ? ?? + - =");
-
 
 	return;
     }
@@ -581,7 +674,11 @@ void Tiface::command_s (const char *p)
     }
 }
 
-
+/**
+ * @brief Finds a group by its name.
+ * @param p The name of the group.
+ * @return The index of the group, or a negative value if not found.
+ */
 int Tiface::find_group (const char *p)
 {
     int g;
@@ -595,7 +692,12 @@ int Tiface::find_group (const char *p)
     return -1;
 }
 
-
+/**
+ * @brief Finds an interface element by its name in a group.
+ * @param p The name of the interface element.
+ * @param g The index of the group.
+ * @return The index of the interface element, or a negative value if not found.
+ */
 int Tiface::find_ifelm (const char *p, int g)
 {
     int i, n;
@@ -608,7 +710,11 @@ int Tiface::find_ifelm (const char *p, int g)
     return -1;
 }
 
-
+/**
+ * @brief Finds a command by its name.
+ * @param p The name of the command.
+ * @return The index of the command, or a negative value if not found.
+ */
 int Tiface::comm1 (const char *p)
 {
     if (! strcmp (p, "?"))  return 0;
@@ -619,10 +725,18 @@ int Tiface::comm1 (const char *p)
     return -1;
 }
 
+/**
+ * @brief Checks if the Tiface is initializing.
+ * @return True if the Tiface is initializing, false otherwise.
+ */
 bool Tiface::isInitializing() {
     return _init;
 }
 
+/**
+ * @brief Gets the number of divisions.
+ * @return The number of divisions.
+ */
 int Tiface::get_n_divisions() {
     if(_initdata==nullptr)
     {
@@ -631,6 +745,11 @@ int Tiface::get_n_divisions() {
     return _initdata->_ndivis;
 }
 
+/**
+ * @brief Gets the label for a division.
+ * @param division_index The index of the division.
+ * @return The label for the division.
+ */
 const char *Tiface::getLabelForDivision(int division_index) {
     if(_initdata==nullptr)
     {
@@ -643,10 +762,9 @@ const char *Tiface::getLabelForDivision(int division_index) {
     return _initdata->_divisd[division_index]._label;
 }
 
+/**
+ * @brief Handles the MT_IFC_RETUNING_DONE message.
+ */
 void Tiface::handle_ifc_retuning_done() {
 
 }
-
-
-
-

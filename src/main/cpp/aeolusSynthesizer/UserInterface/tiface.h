@@ -27,7 +27,8 @@
 
 /**
  * Command line reader of the original Aeolus implementation for Linux (https://github.com/SimulPiscator/aeolus).
- * This functionality is not used here.
+ * This functionality is not used here (that is not directly, it
+ * does serve as base class for extension).
  */
 class Reader : public H_thread
 {
@@ -198,8 +199,8 @@ protected:
     bool            _init; // This is true during the initialization phase, and false afterwards
     M_ifc_init     *_initdata; // User interface settings encapsulated as ITC message
     M_ifc_chconf   *_mididata; // Pointer to the midi interface settings encapsulated as ITC message
-    uint32_t        _ifelms [NGROUP]; // Activation state for the user interface elements as binary mask per group
-    char            _tempstr [500]; // Temperorary string allocated for string operations
+    uint32_t        _ifelms [NGROUP]{}; // Activation state for the user interface elements as binary mask per group
+    char            _tempstr [500]{}; // Temperorary string allocated for string operations
 
     textInterfaceIO tIO; // output to the Android log
 
