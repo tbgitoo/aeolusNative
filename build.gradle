@@ -4,11 +4,11 @@ plugins {
 
 android {
     namespace 'com.mathis.aeolusnative'
-    compileSdk 35
+
 
     defaultConfig {
         minSdk 33
-
+        compileSdk 35
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
         externalNativeBuild {
@@ -29,7 +29,7 @@ android {
     externalNativeBuild {
         cmake {
             path file('src/main/cpp/CMakeLists.txt')
-            version '3.31.6'
+
         }
     }
 

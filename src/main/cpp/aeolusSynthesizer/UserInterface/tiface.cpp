@@ -58,9 +58,9 @@ void Reader::thr_main ()
     if(lineReady) {
         lock();
         if (strlen(presentCommandLine) == 0) {
-            M->_line ="";
+            M->_line =strdup("");
         } else {
-        M->_line = (char *) malloc(strlen(presentCommandLine) + 1);
+        M->_line = strdup(presentCommandLine);
 
         strcpy(M->_line,presentCommandLine);
         presentCommandLine="";

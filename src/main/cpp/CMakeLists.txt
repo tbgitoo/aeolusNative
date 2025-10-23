@@ -6,7 +6,7 @@
 # but with a bunch of modifications to make it work in current android
 
 # Sets the minimum CMake version required for this project.
-cmake_minimum_required(VERSION 3.31.6)
+cmake_minimum_required(VERSION 3.22.1)
 
 # Declares the project name. The project name can be accessed via ${ PROJECT_NAME},
 # Since this is the top level CMakeLists.txt, the project name is also accessible
