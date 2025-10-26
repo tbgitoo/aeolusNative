@@ -311,6 +311,18 @@ namespace Aeolussynthesizer {
 
         bool is_retuning();
 
+        /** Get the list of stop activation as a single long integer bitmask
+         * Each bit in the integer represents the activation state of a stop, with bit 0 representing
+         * stop 0, bit 1 representing stop 1, and so on. If a bit is set to 1, the corresponding stop is activated;
+         * if it is set to 0, the stop is deactivated.
+         * @param division_id The division for which the stop activation bitmask is requested
+         * @return The stop activation bitmask as a long integer
+         */
+        unsigned long getStopActivationBitmask(int division_id);
+
+
+        void setStopActivationBitmask(int division_index,unsigned long stop_states_for_division);
+
 
     protected:
 
@@ -419,6 +431,8 @@ namespace Aeolussynthesizer {
          * @return The user element index of the tremulant, or -1 if the division has no tremulant
          */
         int getIfelmIndexForTremulant(int index_division);
+
+
 
 
     };

@@ -37,7 +37,8 @@ public class AeolussynthManager {
         System.loadLibrary("AeolusAndroid");
     }
 
-    /** Initialization of the Aeolus synthesizer. This should be the first call to this class,
+    /**
+     * Initialization of the Aeolus synthesizer. This should be the first call to this class,
      * typically during Android activity initialization. Here, this is invoked in the initMidiAeolus
      * method defined in baseAeolusMidiActivity
      */
@@ -45,28 +46,33 @@ public class AeolussynthManager {
 
     /**
      * Check whether the C part of Aeolus is still initializing
+     *
      * @return True when initializing, false once initialization is completed
      */
     public static native boolean isInitializing();
 
     /**
      * Turn note on.
-     * @param channel Midi channel (numbered 0-15)
-     * @param key Midi key (60 is middle C)
+     *
+     * @param channel  Midi channel (numbered 0-15)
+     * @param key      Midi key (60 is middle C)
      * @param velocity Volume of key
      */
     public static native void AeolusSynthNoteOn(byte channel, byte key, byte velocity);
+
     /**
      * Turn note off.
-     * @param channel Midi channel (numbered 0-15)
-     * @param key Midi key (60 is middle C)
+     *
+     * @param channel  Midi channel (numbered 0-15)
+     * @param key      Midi key (60 is middle C)
      * @param velocity Volume of key
      */
 
     public static native void AeolusSynthNoteOff(byte channel, byte key, byte velocity);
 
 
-    /** Possiblity to stop and release Aeolus entire Aeolus machinery. Not used at present,
+    /**
+     * Possiblity to stop and release Aeolus entire Aeolus machinery. Not used at present,
      * Android takes care of stopping the activities depending on user and device actions
      */
     public static native void stopAeolussynth();
@@ -76,15 +82,18 @@ public class AeolussynthManager {
      */
     public static native void AeolusSynthTest();
 
-    /** Number of Aeolus rank divisions.
+    /**
+     * Number of Aeolus rank divisions.
      * The number of divisions is configured through the "definition" file in the "Aeolus" instrument
      * directory
+     *
      * @return Returns the number of divisions configured for the Aeolus instrument
      */
     public static native int getNumberDivisions();
 
     /**
      * Get the label defined for a given division
+     *
      * @param index The index of the division
      * @return The label of the division to show in the user interface
      */
@@ -100,6 +109,7 @@ public class AeolussynthManager {
      * a stop corresponds to a on/off knob in the user interface; in some cases,
      * this corresponds to a single rank (=simulation unit=register), some of these
      * are predefined mixtures.
+     *
      * @param index The index of the division
      * @return The number of stops defined for this division
      */
@@ -115,8 +125,9 @@ public class AeolussynthManager {
      * ranks or a pre-defined mixture<br />
      * This function gets the stop lables as configured in the C implementation of Aeolus, which means
      * ultimately from the "definition" instrument definition file.
+     *
      * @param index_division Index of the division the stop belongs to
-     * @param index_stop Index of the stop among the step elements shown
+     * @param index_stop     Index of the stop among the step elements shown
      * @return The label of the stop
      */
 
@@ -124,8 +135,9 @@ public class AeolussynthManager {
 
     /**
      * Is the stop activated?
+     *
      * @param index_division Index of the division the stop belongs to
-     * @param index_stop Index of the stop among the step elements shown
+     * @param index_stop     Index of the stop among the step elements shown
      * @return True when the stop is currently activated, false if not. Also returns
      * false if the index_stop variable does not correspond to an existing stop
      */
@@ -144,10 +156,12 @@ public class AeolussynthManager {
      * interface InterfaceUpdater. Upon
      * stop changes, the onActiveStopsChanged of your InterfaceUpdater object will be called, allowing
      * you to react to the actual value after stop update.
+     *
      * @param index_division Index of the division the stop belongs to
-     * @param index_stop Index of the stop among the step elements shown
+     * @param index_stop     Index of the stop among the step elements shown
      */
     public static native void activateStop(int index_division, int index_stop);
+
     /**
      * Deactivate a stop, which means that the stop cease to contribute to sound generation (technically, it
      * completely ceases once the stopping and reverberation effects are over).
@@ -161,19 +175,23 @@ public class AeolussynthManager {
      * interface InterfaceUpdater. Upon
      * stop changes, the onActiveStopsChanged of your InterfaceUpdater object will be called, allowing
      * you to react to the actual value after stop update.
+     *
      * @param index_division Index of the division the stop belongs to
-     * @param index_stop Index of the stop among the step elements shown
+     * @param index_stop     Index of the stop among the step elements shown
      */
     public static native void deactivateStop(int index_division, int index_stop);
 
-    /** Get the number of midi channels that can be routed to divisions
+    /**
+     * Get the number of midi channels that can be routed to divisions
+     *
      * @return Number of midi channels mappable to divisions. At present,
      * by default, this is 16, corresponding to available midi channels 0-15
      */
 
     public static native int getNumberMidiChannels();
 
-    /** Get the division mapping for a given midi channel
+    /**
+     * Get the division mapping for a given midi channel
      * <br /><br /> In Aeolus, each of the 16 midi channels has an associated midimapping.
      * This function queries the division-mapping part of the midi configuration. This is a
      * 4-bit information, encoding the routing of the midichannel to a maximum of 4 divisions.
@@ -185,22 +203,26 @@ public class AeolussynthManager {
      * Combinations like 0b1101 indicate routing to multiple divisions (here: 0,2,3)<br />
      * 0 indicates that the midichannel is not played by any division.
      * Routing to more than 4 divisions is not foreseen at present.
+     *
      * @param midiIndex The midi channel to be queried
      * @return The mapping byte associated with the midichannel.
      */
 
     public static native byte queryMidiMap(int midiIndex);
 
-    /** Indicate whether a midi channel is mapped to a division
-     * @param myDivisionIndex Index of the division of interest
+    /**
+     * Indicate whether a midi channel is mapped to a division
+     *
+     * @param myDivisionIndex    Index of the division of interest
      * @param myMidiChannelIndex Midichannel
-     * @param isChecked True for mapping the channel to the division, false other wise
+     * @param isChecked          True for mapping the channel to the division, false other wise
      */
 
     public static native void setMidiMapping(int myDivisionIndex, int myMidiChannelIndex, boolean isChecked);
 
     /**
      * Get the division volume.
+     *
      * @param index Index of the division
      * @return Volume associated with division, as a linear gain factor (default value without gain or loss is 1)
      */
@@ -208,7 +230,8 @@ public class AeolussynthManager {
 
     /**
      * Set the division volume.
-     * @param index Index of the division
+     *
+     * @param index        Index of the division
      * @param divisionGain Linear gain for the selected division. 1=no gain or loss.
      */
     public static native void setDivisionVolume(int index, float divisionGain);
@@ -216,13 +239,16 @@ public class AeolussynthManager {
     /**
      * Toggle the activation of the tremulant for the division
      * Toggle means that if the tremulant is on, it will be switched off, and visa-versa
+     *
      * @param divisionIndex Index of the division. If the division has no tremulant configured, the function call will
      *                      be ignored.
      */
 
     public static native void toggleTremulant(int divisionIndex);
 
-    /** Does the division have a tremulant possibility?
+    /**
+     * Does the division have a tremulant possibility?
+     *
      * @param divisionIndex The index of the division
      * @return True if tremulant is configured, false otherwise. This only indicates whether a tremulant is configured,
      * use the tremulantIsActive function to check whether it is activated at present
@@ -232,6 +258,7 @@ public class AeolussynthManager {
 
     /**
      * Is tremulant of selected division active at present?
+     *
      * @param division_index The index of the division to be queried
      * @return True if the tremulant of the selected division is activated. False if not activated, or
      * if the division does not have a tremulant
@@ -241,19 +268,23 @@ public class AeolussynthManager {
 
     /**
      * Get the number of preconfigured tunigs available. These are defined in the scale.h and scale.cpp files
+     *
      * @return The number of available tunings
      */
     public static native int get_n_tunings();
 
     /**
      * Get the label of the i-th tuning configured
+     *
      * @param i Index of the tuning
      * @return Human-readable label for displaying or selecting the tuning
      */
     public static native String getTuningLabel(int i);
 
-    /** Get the currently active tuning (= temperament or also scale, the denomination
+    /**
+     * Get the currently active tuning (= temperament or also scale, the denomination
      * varies a bit in different places in the Aeolus and Android implementation
+     *
      * @return The index of the currently selected tuning
      */
     public static native int getCurrentTuning();
@@ -267,12 +298,15 @@ public class AeolussynthManager {
 
     /**
      * Get the presently set base frequency for the entire organ
+     *
      * @return Base tuning frequency, as float
      */
     public static native float getBaseFrequency();
 
-    /** Are we presently performing a retuning operation (i.e changing base tuning frequency or
+    /**
+     * Are we presently performing a retuning operation (i.e changing base tuning frequency or
      * changing temperament or both)?
+     *
      * @return true if retuning, false otherwise. First-time loading is not considered retuning.
      */
     public static native boolean isRetuning();
@@ -280,4 +314,8 @@ public class AeolussynthManager {
     public static native void panicoff();
 
     public static native void panicon();
+
+    public static native long getActiveStopsForDivision(int divisionIndex);
+
+    public static native void setActiveStopsForDivision(int divisionIndex, long stopStatesForDivision);
 }

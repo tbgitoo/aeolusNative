@@ -541,6 +541,52 @@ namespace Aeolussynthesizer {
     }
 
 
+    unsigned long AeolusSynthesizer::getStopActivationBitmask(int division_id)
+    {
+        Group* division_group = model->getGroupWithLabel(getLabelForDivision(division_id));
+        unsigned long bitmask=0;
+        if(division_group==nullptr)
+        {
+            return 0;
+        }
+        int n_stops=0;
+        for(int i=0; i<division_group->_nifelm; i++)
+        {
+            if(division_group->_ifelms[i]._type==Ifelm::DIVRANK){
+                if(division_group->_ifelms[i]._state>0)
+                {
+                    bitmask |= (1 << n_stops);
+                }
+                n_stops++;
+            }
+        }
+        return bitmask;
+    }
+
+    void AeolusSynthesizer::setStopActivationBitmask(int division_index,unsigned long stop_states_for_division){
+        Group* division_group = model->getGroupWithLabel(getLabelForDivision(division_index));
+        if(division_group==nullptr)
+        {
+            return;
+        }
+        int n_stops=0;
+        for(int i=0; i<division_group->_nifelm; i++)
+        {
+            if(division_group->_ifelms[i]._type==Ifelm::DIVRANK){
+                if((stop_states_for_division & (1 << n_stops)) !=0)
+                {
+                    activateStop(division_index,n_stops);
+                } else {
+                    deactivateStop(division_index,n_stops);
+                }
+                n_stops++;
+            }
+        }
+    }
+
+
+
+
 }
 
 

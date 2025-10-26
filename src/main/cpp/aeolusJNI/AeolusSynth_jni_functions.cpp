@@ -366,10 +366,26 @@ Java_com_mathis_aeolusnative_AeolusSynth_AeolussynthManager_panicoff(JNIEnv *env
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_mathis_aeolusnative_AeolusSynth_AeolussynthManager_panicon(JNIEnv *env, jclass clazz) {
-    // TODO: implement panicon()
+    
     for(int chan=0; chan<16;chan++) {
         for(int key=36; key<=96;key++)
             synth->noteon(chan, key, 127);
     }
 }
 
+
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_com_mathis_aeolusnative_AeolusSynth_AeolussynthManager_getActiveStopsForDivision(JNIEnv *env,
+                                                                                      jclass clazz,jint division_index) {
+    return synth->getStopActivationBitmask(division_index);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_mathis_aeolusnative_AeolusSynth_AeolussynthManager_setActiveStopsForDivision(JNIEnv *env,
+                                                                                      jclass clazz,
+                                                                                      jint division_index,
+                                                                                      jlong stop_states_for_division) {
+    synth->setStopActivationBitmask(division_index,stop_states_for_division);
+
+}
